@@ -1,1 +1,1 @@
-# scripts
+Collection of daily use scripts
