@@ -1,1 +1,1 @@
-Collection of daily use scripts
+Collection of random scripts
