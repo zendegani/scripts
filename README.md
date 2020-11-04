@@ -1,1 +1,1 @@
-Collection of random scripts
+This is a readme file
