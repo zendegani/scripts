@@ -1,5 +1,5 @@
 #!/bin/bash
-#ver 2020-02-19
+#ver 2020-11-25
 
 scriptname="subscript"
 [ -e $scriptname ] && rm $scriptname
@@ -130,7 +130,7 @@ do
         "5.3.5 Cartesian relaxation")
             echo "old 5.3.5 Cartesian relaxation"
             vaspmodule="intel/18.0.5 impi/2018.4"
-            vaspexec="/u/bzg/Thermodynamics/vasp_Langevin/vasp_5.3.5/vasp"  # not sure if re-compiled yet 
+            vaspexec="/u/bzg/Thermodynamics/vasp_Langevin/vasp_5.3.5/vasp"  # not sure if re-compiled yet
             break
             ;;
         "5.4.1 relax c_z vector")
@@ -270,7 +270,7 @@ done
 
 echo "################################"
 echo ""
-read -p "Enter job(s) name [meinjob]: " jobname 
+read -p "Enter job(s) name [meinjob]: " jobname
 jobname=${jobname:-"meinjob"}
 
 #echo "################################"
@@ -305,19 +305,13 @@ jobname=${jobname:-"meinjob"}
 #     mempercpu='#SBATCH --mem-per-cpu=3GB             # Job memory request'
 # fi
 
-if [ $nd -gt 40 ]
-  then
-    echo 'Number of Cores are greater than 40, so the job is constrained to switches'
-    Features="#SBATCH --constraint='[swi1|swi1|swi2|swi3|swi4|swi5|swi6|swi7|swe1|swe2|swe3|swe4|swe5|swe6|swe7]'"
-fi
-
 
 
 cat > $scriptname << EOF
 #!/bin/bash
 #SBATCH --job-name=$jobname            # Job name
 #SBATCH --mail-type=FAIL              # Mail events (NONE, BEGIN, END, FAIL, ALL)
-#SBATCH --mail-user=zendegani@mpie.de # Where to send mail	
+#SBATCH --mail-user=zendegani@mpie.de # Where to send mail
 #SBATCH --ntasks=$nd                   # Run on #nd CPU
 #SBATCH --time=$hr              # Time limit days-hrs:min:sec
 #SBATCH --output=std.log              # Standard output and error log
@@ -325,7 +319,7 @@ cat > $scriptname << EOF
 $cluster
 $node
 $mempercpu
-$Features
+
 
 pwd; hostname; date
 echo jobid \$SLURM_JOB_ID
@@ -337,7 +331,7 @@ srun -n $nd $vaspexec
 
 rm EIGENVAL PROCAR PCDAT IBZKPT CHG $filesrm
 bzip2 POTCAR $fileszip std.log err.log
-bzip2 -f vasprun.xml OSZICAR 
+bzip2 -f vasprun.xml OSZICAR
 gzip -f OUTCAR
 
 date
@@ -360,4 +354,3 @@ echo ""
 
 ##SBATCH --constraint=cmti             # only run on cmti
 ##SBATCH --partition=$cluster
-
