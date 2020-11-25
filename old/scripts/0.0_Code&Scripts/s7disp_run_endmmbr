@@ -1,0 +1,34 @@
+#!/bin/sh
+
+cd Q-Al-Mg
+
+here=`pwd`
+echo "$here"
+folder=`ls -1d [0-9]*`
+for i in $folder;do
+  echo "$i"
+  cd $i/finite/
+  mv -f KPOINTS KPOINTSrelax
+  cp ../../../KPOINTSsuper ./KPOINTS
+  mv -f INCAR INCARrelax
+  cp ../../../INCARfinite ./INCAR
+  mv Q.sh Q$i.sh
+  
+  heresx=`pwd`
+  echo "$heresx"
+  foldersx=`ls -1d 1_[0-9]*`
+  for sx in $foldersx;do
+    cd $sx
+    cp ../KPOINTS .
+    cp ../INCAR .
+    cp ../POTCAR . 
+    qsub -pe 'mpi*' 24 ../Q$i.sh
+    cd $heresx
+  done
+  cd forces_background
+  cp ../KPOINTS .
+  cp ../INCAR .
+  cp ../POTCAR . 
+  qsub -pe 'mpi*' 24 ../Q$i.sh
+  cd $here
+done

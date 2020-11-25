@@ -1,0 +1,59 @@
+#!/bin/csh
+
+#--- List of ENCUT
+set ENCUT="200 300 350 400 450 500 600"
+
+#--- for each value of the ENCUT list
+foreach a ($ENCUT)
+
+  mkdir $a
+  cd $a
+  
+  cp ../script.serial.sh ./
+  cp ../POTCAR ./
+
+#--- prompt user info
+  echo ""
+  echo "-------------------------------------------------------"
+  echo "  ENCUT = $a"
+  echo "-------------------------------------------------------"
+
+#--- create atomic KPOINTS
+  cat >KPOINTS << KPOINTSeof
+K-Points
+ 0
+Monkhorst
+ 8 8 8
+ 0 0 0  
+KPOINTSeof
+
+#--- create atomic POSCAR
+  cat >POSCAR <<POSCAReof
+bcc Fe, NM
+    0.94
+        2.8664999008         0.0000000000         0.0000000000
+        0.0000000000         2.8664999008         0.0000000000
+        0.0000000000         0.0000000000         2.8664999008
+    2
+Direct
+     0.000000000         0.000000000         0.000000000
+     0.500000000         0.500000000         0.500000000
+POSCAReof
+
+#--- create atomic INCAR
+  cat > INCAR << INCAReof
+SYSTEM =  Fe (BCC) NM
+ENCUT  =  $a        energy cutoff [eV]
+ISMEAR =  1          smearing method (1=Methfessel-Paxton)
+SIGMA  =  0.2        smearing scale-factor
+ISIF   =  0          stress tensor calc (0=no)
+ISPIN  =  1          non spin-polarized calc 1-spin OFF, 2-spin ON
+NBANDS =  13
+!   MAGMOM =1*2.0             !initial_mag_moment
+INCAReof
+
+  qsub  script.serial.sh
+  cd ../
+
+end
+

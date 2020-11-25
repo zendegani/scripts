@@ -1,0 +1,19 @@
+#!/bin/sh
+
+hier=`pwd`
+echo "$hier"
+folder=`ls -1d [0-9]*`
+for i in $folder;do
+echo "$i"
+cd $i
+
+cp ../../INCAR ./
+cp ../../Q1.05 ./
+cp ../../POTCAR ./
+cp ../../KPOINTS ./
+qsub -pe 'mpi*' 48 Q1.05
+cd $hier
+
+done
+
+

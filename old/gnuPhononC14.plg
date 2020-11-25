@@ -1,0 +1,25 @@
+#! /usr/bin/gnuplot
+
+#set terminal pngcairo
+#set output 'C14XXX.png'
+#set term aqua size 1000,600
+
+space=-1.
+set label "{/Symbol K}" at 0.0,space
+set label "{/Symbol G}" at 50.0,space
+set label "{/Symbol M}" at 100.0,space
+set label "{/Symbol L}" at 150,space
+set label "{/Symbol H}" at 200.0,space
+set label "{/Symbol A}" at 250,space
+set label "{/Symbol G}" at 300,space
+
+set arrow from 100,0.0 to 100,45.0 nohead lw 1 lc 3
+set arrow from 150,0.0 to 150,45.0 nohead lw 1 lc 3
+set arrow from 200,0.0 to 200,45.0 nohead lw 1 lc 3
+
+set ylabel "{/Symbol w} (m{/Times-Bold e}V)"
+unset xtics
+set arrow from 0.0,5.5053 to 2.366,5.5053 nohead lw 2
+plot for [col=2:300:1] 'test' using col with lines
+
+

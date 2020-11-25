@@ -1,0 +1,73 @@
+#!/bin/bash
+
+#ver 2015.10.29
+
+name=`echo $0 | awk -F/ '{print $NF}'`
+while getopts ":s:t:p:h" opt; do
+  case $opt in
+    s)
+      SKIP=$OPTARG
+      echo "Skip the $SKIP rows from the beginning." >&2
+      ;;
+    t)
+      title=$OPTARG
+      echo "Title set as: $title" >&2
+      ;;
+    p)
+      pattern=$OPTARG
+      echo "Pattern set as: $pattern*" >&2
+      ;;
+    h)
+     echo ""
+      echo -n -e "\033[31m\033[1mUSAGE\033[0m:   \033[1m$name  \033[0m\n"
+      echo""
+      echo -e "Options: -p PATTERN  Only matched folders will be plotted. Do not use 'wildcards' \n"\
+              "        -t TITLE    Title of the plot.\n"\
+              "        -s SKIP     Number of the electronic-steps to be skipped in total-energy plot. \n"\
+              "        -h          Print this help\n" >&2
+      exit 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      echo -n -e "Use \033[1m$name \033[0m -h  to see help\n" >&2
+      exit 1
+      ;;
+  esac
+done
+
+SKIP=${SKIP:-'4'}
+title=${title:-'noname'}
+here=`pwd`
+echo -e "\n Current path: $here \n"
+output='conv.dat'
+outputEP='convEP.dat'
+
+#folders=`ls -1d "$pattern"*/`
+folders=`eval find ${pattern}* -name "OUTCAR*" | rev | cut -d/ -f2- | rev`
+echo -e "Folders are:\n$folders \n"
+
+for i in $folders;do
+    cd $i
+    CAR=`ls OUTCAR*`
+    zgrep 'free energy    TOTEN' $CAR | awk '{print $(NF-1)}' | cat -n > tmp1
+    #absolute value of energy
+    zgrep 'total energy-change' $CAR | awk -F: '{print $2}' | awk '{print $1}' | awk '{x=$1;y=(x<0?-x:x);print y}' > tmp2
+    zgrep 'rms(total)' $CAR | awk '{print $3}' > tmp3
+    if zgrep -q E_p OSZICAR*; then zgrep E_p OSZICAR* | awk '{print $3 " " $NF}' | cat -n > $outputEP; fi
+    paste tmp1 tmp2 tmp3 > $output
+    rm tmp1 tmp2 tmp3
+    cd $here
+done
+
+#Ep=`for f in $folders; do if zgrep -q E_p $f/OSZICA*; then zgrep E_p $f/OSZICA* | tail -1 | awk '{print $NF}' ORS=' '; else echo 0; fi; done`
+Ep=`for f in $folders; do if [ -s $f/$outputEP ]; then tail -1 $f/$outputEP | awk '{print $NF}' ORS=' '; else echo 0; fi; done`
+echo $Ep
+
+L=$LINES
+C=$COLUMNS
+
+gnuplot -e "TIT='${title}'; folders='${folders}'; out='${output}'; outEP='${outputEP}'; COL='${C}'; LIN='${L}'; SKIP='${SKIP}'; EP='${Ep}'" /u/alizen/scripts/gnuprogress.plg

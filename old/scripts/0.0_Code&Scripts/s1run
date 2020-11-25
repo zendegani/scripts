@@ -1,0 +1,56 @@
+#!/bin/sh
+cd Q-Al-Mg
+laststep=0
+folder=`ls -1d [0-9]*`
+here=`pwd`
+for f in $folder; do
+  #--- prompt user info
+  echo "-------------------------------------------------------"
+  echo "  END MEMBER  = $f"
+  echo "-------------------------------------------------------"
+  cd $f
+#   foldera=`ls -1d [0-9].*`
+#   herea=`pwd`
+#   mv E-V.dat E-V.dat$laststep
+#   mv murn.dat murn.dat$laststep
+#   mv e-v.dat e-v.dat$laststep
+#   mv murn-ev.dat murn-ev.dat$laststep
+#   mv E-a.dat E-a.dat$laststep
+#   for a in $foldera; do
+#     echo $f $a
+#     cd $a
+  gunzip POTCAR.gz
+  mv INCAR INCAR.$laststep
+  mv OUTCAR OUTCAR.$laststep
+  mv POSCAR POSCAR.$laststep
+  head -29 CONTCAR >  POSCAR
+  mv CONTCAR CONTCAR.$laststep
+  mv OSZICAR OSZICAR.$laststep
+  cp ../../INCAR.1 ./INCAR
+  lat=(0.97 0.98 0.99 1.00 1.01 1.02 1.03)
+  for a in "${lat[@]}"; do
+      #--- prompt user info
+      echo "-------------------------------------------------------"
+      echo "            Lat. coef. = $a"
+      echo "-------------------------------------------------------"
+      mkdir $a
+      cd $a
+      cp ../Q.sh ./
+      cp ../INCAR ./
+      cp ../KPOINTS ./
+      cp ../POTCAR ./
+      cp ../POSCAR ./
+      #--- create POSCAR
+      mv POSCAR POSCARtmp
+      head -1 POSCARtmp >> POSCAR
+      cat >> POSCAR << POSCAReof
+      $a
+POSCAReof
+      tail -27 POSCARtmp >> POSCAR
+      cp Q.sh Q$f.sh
+      qsub -pe 'mpi*' 24 Q$f.sh
+      cd ../
+  done
+  cd $here
+done
+

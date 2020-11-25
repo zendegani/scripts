@@ -1,0 +1,79 @@
+#!/bin/sh
+
+hier=`pwd`
+echo "$hier"
+
+## Name your folder
+folder=`ls -1d [0-9].*`
+for i in $folder;do
+
+echo "$i"
+cd $i
+hier2=`pwd`
+echo "$hier2"
+
+mkdir tmp
+mv CONTCAR ./tmp/
+rm *
+mv ./tmp/CONTCAR ./POSCAR
+rm -fr tmp
+
+echo 'convert POSCAR to strcut'
+sxstructprint --vasp -i POSCAR > struct.sx
+echo 'generating supercell'
+sxstructrep -r 1x1x2 -i struct.sx -o Sstruct.sx
+echo 'convert Supercell to POSCAR'
+sx2poscar -i Sstruct.sx -o SPOSCAR
+echo 'generating displacements'
+sxuniqdispl -d 0.02 -i Sstruct.sx
+echo 'generating displaced POSCAR'
+sx2poscar -i input-disp-1.sx -o SPOSCAR1
+
+
+abc=`ls -v -1d i*.*`
+for i in $abc;do
+echo $i
+sx2poscar -i $i -o SPOSCAR$i
+
+nodir=`ls -1d i*.* | wc -l`
+for (( i=1; i<$nodir+1; i++ )); do sx2poscar -i input-disp-$i.sx -o SPOSCAR$i; done 
+for (( i=1; i<$nodir+1; i++ )); do mkdir 1_$i; done 
+for (( i=1; i<$nodir+1; i++ )); do cp SPOSCAR$i 1_$i/POSCAR; done 
+
+
+echo 'making directories and copying files'
+
+mkdir 1_1
+
+mkdir forces_background
+mkdir phonons
+mkdir thermo
+
+cp SPOSCAR forces_background/POSCAR
+cp SPOSCAR1 1_1/POSCAR
+
+cp ../script.serial.sh ./forces_background/
+cp ../INCAR ./forces_background/
+cp ../POTCAR ./forces_background/
+cp ../KPOINTS ./forces_background/
+
+
+cp ../script.serial.sh ./1_1/
+cp ../INCAR ./1_1/
+cp ../POTCAR ./1_1/
+cp ../KPOINTS ./1_1/
+
+echo 'submitting Jobs in each folder'
+
+cd $hier2
+cd forces_background/
+qsub  script.serial.sh
+
+cd $hier2
+cd 1_1/
+qsub  script.serial.sh
+
+cd $hier
+
+done
+ 

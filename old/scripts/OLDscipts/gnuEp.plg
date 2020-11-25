@@ -1,0 +1,60 @@
+#! /usr/bin/gnuplot
+
+print 'version', GPVAL_VERSION
+#set terminal dumb COL LIN
+set term aqua size 1000,600
+#set xtics 1
+print  GPVAL_TERMOPTIONS
+#file_exists(file) = system("[ -f '".file."' ] && echo '1' || echo '0'") + 0
+
+set multiplot layout 2,3 rowsfirst title "C14-Fe_2Nb ".TIT
+unset format y
+unset title
+set format y "%G"
+set key bottom
+set ylabel "Total Energy (eV/cell) penalty included"
+set xlabel "{/Symbol l}"
+unset logscale xy
+plot outEP using 3:1 with lp notitle
+
+
+#set title "E_0=E-E_p"
+#set key bottom
+set ylabel "Ground Energy(eV/cell) penalty excluded"
+set xlabel "{/Symbol l}"
+set format y "%G"
+unset logscale xy
+plot outEP using 3:($1+$2) with lp title "additive", '' using 3:($1-$2) with lp title "subtractive"
+
+
+
+set ylabel "w/o Penalty (eV/cell)"
+set xlabel "{/Symbol l}"
+set format y "%G"
+unset logscale xy
+plot outEP using 3:($1+$2) with lp title "additive", '' using 3:($1-$2) with lp title "subtractive", ''  using 3:1 with lp title "included"
+
+
+set logscale xy
+set format y "%7.0E"
+set ylabel "Penalty Energy (eV/cell)"
+set xlabel "1/{/Symbol l}"
+plot outEP using (1/$3):2 with lp notitle
+
+
+unset multiplot
+
+#outEP='results.dat'
+#TIT='abc'
+
+# saving figure
+
+
+#set terminal pngcairo dashed enhanced size 1500,900
+#set output strftime('status-('.TIT.')_%F_%H-%M-%S.png', time(0))
+
+
+#unset output
+
+
+#if ( file_exists("mydatafile") )

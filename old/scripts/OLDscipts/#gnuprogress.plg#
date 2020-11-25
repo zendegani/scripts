@@ -1,0 +1,53 @@
+#! /usr/bin/gnuplot
+
+print 'version', GPVAL_VERSION
+#set terminal dumb COL LIN
+set term aqua size 1000,600
+#set xtics 1
+print  GPVAL_TERMOPTIONS
+
+set multiplot layout 1,4
+unset logscale xy
+set format y "%G"
+set title "total-energy (eV/cell)"
+plot for [i=1:words(folders)] word(folders,i)."/".out using 1:2 every::SKIP with linespoints lt i lw 2 title sprintf("{/Symbol l}=%1.2f",word(EP,i)+0)
+set logscale y
+set format y "%7.0E"
+
+set title "total energy-change"
+plot for [i=1:words(folders)] word(folders,i)."/".out using 1:3 title '{/Symbol l}='.sprintf("%1.2f",word(EP,i)+0)
+
+set title "Residue 'rms(total)'"
+plot for [i=1:words(folders)] word(folders,i)."/".out using 1:5 with linespoints lt i lw 2 title '{/Symbol l}='.sprintf("%1.2f",word(EP,i)+0)
+
+set title "Penalty E_p"
+plot for [i=1:words(folders)] word(folders,i)."/".out using 1:4 with linespoints lt i lw 2 title '{/Symbol l}='.sprintf("%1.2f",word(EP,i)+0)
+
+unset multiplot
+
+
+set terminal pngcairo dashed enhanced size 1500,900
+set output 'status.png'
+
+
+set multiplot layout 1,4
+unset logscale xy
+set format y "%G"
+set title "total-energy (eV/cell)"
+plot for [i=1:words(folders)] word(folders,i)."/".out using 1:2 every::SKIP with linespoints lt i lw 2 title '{/Symbol l}='.sprintf("%1.2f",word(EP,i)+0)
+set logscale y
+set format y "%7.0E"
+
+set title "total energy-change"
+plot for [i=1:words(folders)] word(folders,i)."/".out using 1:3 title '{/Symbol l}='.sprintf("%1.2f",word(EP,i)+0)
+
+set title "Residue 'rms(total)'"
+plot for [i=1:words(folders)] word(folders,i)."/".out using 1:5 with linespoints lt i lw 2 title '{/Symbol l}='.sprintf("%1.2f",word(EP,i)+0)
+
+set title "Penalty E_p"
+plot for [i=1:words(folders)] word(folders,i)."/".out using 1:4 with linespoints lt i lw 2 title '{/Symbol l}='.sprintf("%1.2f",word(EP,i)+0)
+
+unset multiplot
+
+unset output
+

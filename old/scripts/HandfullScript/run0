@@ -1,0 +1,18 @@
+#!/bin/sh
+
+cd Q-Al-Mg
+# 1st run
+folder=`ls -1d [0-9]*`
+hier=`pwd`
+for f in $folder; do
+
+  echo $f
+  cd $f
+  cp ../../Q.sh ./
+  cp ../../INCAR.0 ./INCAR
+  cp ../../KPOINTS.0 ./KPOINTS
+  qsub -pe 'mpi*' 24 Q.sh
+  cd $hier
+
+done
+

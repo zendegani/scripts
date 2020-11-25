@@ -1,0 +1,23 @@
+#!/bin/sh
+module load sphinx/serial/2.0.3
+
+filestore=`pwd`
+echo "$filestore"
+
+cd Q-Al-Mg
+
+here=`pwd`
+echo "$here"
+folder=`ls -1d [0-9]*`
+for i in $folder;do
+  echo "$i"
+  cd $i/finite/
+  $filestore/get_sxdynmat.sx > get_sxdynmat.log
+  mkdir thermo
+  cp sxdynmat.sx thermo/
+  cd thermo
+  sxdynmat -i sxdynmat.sx > sxdynmat.log
+  sxphonon -s $filestore/phononSet_thermo.sx > sxphonon.log
+  sxthermo -T 1000 -dT 2 -p phonon.sxb > sxthermo.log
+  cd $here
+done

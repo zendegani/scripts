@@ -1,0 +1,37 @@
+
+nic minimisation 
+GGA = PE 
+PREC = Accu 
+EDIFFG = -0.005 
+ENCUT = 300. 
+ISPIN = 2 
+# AMIX = 0.2 ! linear mixing parameter 
+# BMIX = 0.1 ! cutoff wave vector for Kerker mixing scheme 
+# AMIX_MAG = 0.8 
+# BMIX_MAG = 0.1 
+NELMIN = 4 
+NELM = 500 ! Maximum number of electronic SC steps 
+NELMDL = -20 ! Number of NON-selfconsistency steps (negative value: delay only for the start-configuration) 
+LMAXMIX = 6 ! PAW flag 
+MAXMIX = 50 
+
+PBE+U calculation: ! types & order: O Si Eu Al P 
+LDAU = .TRUE. ! Switches on the L(S)DA+U 
+LDAUTYPE = 2 ! Dudarev's approach to LSDA+U (Default) 
+LDAUL = 3 3 -1 
+LDAUU = 6.00 6.00 0.00 
+LDAUJ = 0.00 0.00 0.00 
+LDAUPRINT = 0 ! Controls verbosity of the L(S)DA+U module, 0: silent 
+
+DOS related values 
+SIGMA = 0.1 
+ISMEAR = 0 ! Gaussian smearing for big cells 
+
+Do not write huge files 
+LCHARG = .FALSE. 
+LWAVE = .FALSE. 
+
+Performance options 
+NPAR = 2 ! adjust to number of processors 
+ALGO = N 
+

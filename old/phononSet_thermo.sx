@@ -1,0 +1,10 @@
+format phononSet;//q-point settings for sxphonon.sx
+
+qMesh {
+qPoint {
+      coords = [0., 0, 0]; relative=false;
+      weight = 1;
+   }
+   folding = [30,30,30];
+}
+

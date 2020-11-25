@@ -1,0 +1,10 @@
+
+
+qstat | grep ali | awk '{print $1}' > jobs.tmp
+
+while read LINE; do
+  echo $LINE
+  qdel $LINE
+done<jobs.tmp
+
+rm jobs.tmp

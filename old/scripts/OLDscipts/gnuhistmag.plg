@@ -1,0 +1,41 @@
+#!/opt/local/bin/gnuplot
+#/usr/bin/gnuplot
+
+clear
+reset
+set key off
+#set border 6
+# Add a vertical dotted line at x=0 to show centre (mean) of distribution.
+set yzeroaxis
+set yrange [0:]
+
+#set xtic .2
+
+# Each bar is half the (visual) width of its x-range.
+set boxwidth BinWidth/2. abs
+#set boxwidth 0.01 re
+set style fill solid 1.0 noborder
+print BinWidth
+
+binwidth =BinWidth;
+bin(x) = binwidth * (floor(x/binwidth) + .5)
+
+#plot FILE  using (bin($2)):(1) smooth frequency with boxes
+
+m=0
+plot for [i=1:words(natoms)] FILE using 1:2 every
+
+
+
+
+
+
+#plot FILE every ::0::7  using (rounded($2)):(1) smooth frequency with boxes, '' every ::8  using (rounded($2)):(1) smooth frequency with boxes
+
+#set style histogram cluster gap 1
+#set style fill solid border -1
+
+#set style data histogram
+#set style histogram cluster gap 1
+#set style fill solid border -1
+#set xtic rotate by -45 scale 0
