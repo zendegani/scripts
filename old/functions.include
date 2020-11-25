@@ -58,7 +58,13 @@ checkReal() { printf "%s " "$1" | awk '/^-?[0-9]+\.?[0-9]* $/{print "ok"; exit};
 checkInteger() { printf "%s " "$1" | awk '/^-?[0-9]+ $/{print "ok";exit};{print "error"}'
 }
 
-get() { echo `sed -nE 's/^[ ]*'$1'[ ]*=([^#]*).*/\1/p' parameters.dat`
+get() { getParameters "$1" parameters.dat
+}
+
+getEOS() { getParameters "$1" parameters_EOS
+}
+
+getParameters() { echo `sed -nE 's/^[ ]*'$1'[ ]*=([^#]*).*/\1/p' $2`
 }
 
 getOption() { printf "%s " "$options" | awk '{for (i=1;i<=NF;i++) if ($i=="'$1'") {print "True"; exit}; print "False"}'
@@ -87,7 +93,8 @@ getValue() { printf "%s " "$options" | sed -e 's/.*'$1' / /' -e 's/ $//' -e 's/ 
 }
 
 checkInput() { 
-  while [ -n "$*" ]; do
+  variableNameVeryUnusualToPreventOverridingInMainScript=$#
+  for (( i=1; i<=$variableNameVeryUnusualToPreventOverridingInMainScript; i++  )) do
     if [ -z "$1" ]; then error "input missing in parameters.dat"; fi
     if [ "$1" = "" ]; then error "input missing in parameters.dat is empty"; fi
     shift
