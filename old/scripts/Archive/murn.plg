@@ -1,7 +1,0 @@
-#! /usr/bin/gnuplot
-
-print GPVAL_VERSION
-#set terminal dumb `echo $COLUMNS $LINES`
-set terminal dumb COL LIN
-print GPVAL_TERMOPTIONS
-plot 'E-V.dat' using 1:2, 'murn.dat' using 1:2

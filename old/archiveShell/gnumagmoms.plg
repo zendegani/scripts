@@ -1,8 +1,0 @@
-#! /usr/bin/gnuplot
-
-print GPVAL_VERSION
-#set terminal dumb `echo $COLUMNS $LINES`
-set terminal dumb COL LIN
-print GPVAL_TERMOPTIONS
-set yrange [-maxY:maxY]
-plot 'Magmoms.dat' using 1:2, 0
